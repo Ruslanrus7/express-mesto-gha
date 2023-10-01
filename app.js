@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
-const rateLimit = require('express-rate-limit');
 
 const router = require('./routes/index');
 
@@ -16,12 +15,6 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
 
 const app = express();
 
-// const limiter = rateLimit({
-//   windowMs: 15 * 60 * 1000, // за 15 минут
-//   max: 100, // можно совершить максимум 100 запросов с одного IP
-// });
-
-// app.use(limiter);
 app.use(express.json());
 app.use(router);
 
