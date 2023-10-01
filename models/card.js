@@ -1,16 +1,23 @@
 const mongoose = require('mongoose');
+const urlRegular = require('../utils/constans');
 
 const cardSchema = new mongoose.Schema({
 
   name: {
     type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 30,
+    required: [true, 'поле должно быть заполнено'],
+    minlength: [2, 'минимальная длина поля name - 2'],
+    maxlength: [30, 'максимальная длина поля name - 30'],
   },
   link: {
     type: String,
-    required: true,
+    required: [true, 'поле должно быть заполнено'],
+    validate: {
+      validator(v) {
+        return urlRegular.test(v);
+      },
+      message: 'введите url',
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,

@@ -1,5 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
+const rateLimit = require('express-rate-limit');
+
+const router = require('./routes/index');
 
 const { PORT = 3000 } = process.env;
 
@@ -12,20 +16,29 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
 
 const app = express();
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '651306ee5ab67c99ab14d626',
-  };
-
-  next();
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // за 15 минут
+  max: 100, // можно совершить максимум 100 запросов с одного IP
 });
 
+app.use(limiter);
 app.use(express.json());
-app.use('/', require('./routes/users'));
-app.use('/', require('./routes/cards'));
+app.use(router);
+
+app.use(errors());
 
 app.use('*', (req, res) => {
   res.status(404).send({ message: 'страница не найдена' });
+});
+
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+
+  res.status(statusCode)
+    .send({
+      message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
+    });
+  next();
 });
 
 app.listen(PORT, () => {
