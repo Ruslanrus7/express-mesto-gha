@@ -49,7 +49,7 @@ userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        throw new ForbiddenError('Пользователь с таким email не найден');
+        throw new UnauthorizedError('Неправельная почта или пароль');
       }
 
       return bcrypt.compare(password, user.password)
