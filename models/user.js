@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const UnauthorizedError = require('../errors/unauthorized-err');
 const urlRegular = require('../utils/constans');
-const ForbiddenError = require('../errors/forbidden-err');
 
 const userSchema = new mongoose.Schema({
 
