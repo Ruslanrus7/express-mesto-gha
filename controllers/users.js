@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const ConflictError = require('../errors/conflict-err');
 const BadRequestError = require('../errors/bad-request-err');
 const NotFoundError = require('../errors/not-found-err');
-const UnauthorizedError = require('../errors/unauthorized-err');
 const User = require('../models/user');
 
 module.exports.getUsers = (req, res, next) => {
@@ -23,9 +22,10 @@ module.exports.getUserById = (req, res, next) => {
         next(new BadRequestError('Invalid ID'));
       } else if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError('User not found'));
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -54,9 +54,10 @@ module.exports.createUser = (req, res, next) => {
             next(new ConflictError('Пользователь с таким email уже зарегестрирован'));
           } else if (err.name === 'ValidationError') {
             next(new BadRequestError(err.message));
+          } else {
+            next(err);
           }
-        })
-        .catch(next);
+        });
     });
 };
 
@@ -71,9 +72,10 @@ module.exports.editUser = (req, res, next) => {
         next(new BadRequestError(err.message));
       } else if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError('User not found'));
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 module.exports.editAvatarUser = (req, res, next) => {
@@ -87,9 +89,10 @@ module.exports.editAvatarUser = (req, res, next) => {
         next(new BadRequestError(err.message));
       } else if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError('User not found'));
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 module.exports.login = (req, res, next) => {
@@ -105,9 +108,6 @@ module.exports.login = (req, res, next) => {
 
       res.send({ _id: token });
     })
-    .catch((err) => {
-      next(new UnauthorizedError(err.message));
-    })
     .catch(next);
 };
 
@@ -118,9 +118,7 @@ module.exports.getDataUser = (req, res, next) => {
       res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError('Invalid ID'));
-      } else if (err.name === 'DocumentNotFoundError') {
+      if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError('User not found'));
       } else {
         next(err);

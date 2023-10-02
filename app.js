@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const rateLimit = require('express-rate-limit');
+const NotFoundError = require('./errors/not-found-err');
 
 const router = require('./routes/index');
 
@@ -27,8 +28,8 @@ app.use(router);
 
 app.use(errors());
 
-app.use('*', (req, res) => {
-  res.status(404).send({ message: 'страница не найдена' });
+app.use('*', (req, res, next) => {
+  next(new NotFoundError('страница не найдена'));
 });
 
 app.use((err, req, res, next) => {

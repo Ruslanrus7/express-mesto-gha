@@ -13,7 +13,7 @@ module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.send(card))
+    .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError(err.message));
@@ -26,7 +26,9 @@ module.exports.createCard = (req, res, next) => {
 module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
-      if (!card.owner.equals(req.user._id)) {
+      if (card === null) {
+        throw new NotFoundError('картачка с таким id не найдена');
+      } else if (!card.owner.equals(req.user._id)) {
         throw new ForbiddenError('карточка другого пользователя');
       }
       Card.deleteOne(card)
@@ -39,9 +41,7 @@ module.exports.deleteCard = (req, res, next) => {
         });
     })
     .catch((err) => {
-      if (err.name === 'TypeError') {
-        next(new NotFoundError('картачка с таким id не найдена'));
-      } else if (err.name === 'CastError') {
+      if (err.name === 'CastError') {
         next(new BadRequestError('Invalid ID'));
       } else {
         next(err);

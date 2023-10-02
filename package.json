@@ -2,12 +2,12 @@
   "name": "express-mesto-gha",
   "version": "1.0.0",
   "description": "Проект Mesto фронтенд + бэкенд",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "lint": "npx eslint"
+    "lint": "npx eslint ./src"
   },
   "keywords": [],
   "author": "Ruslan",
